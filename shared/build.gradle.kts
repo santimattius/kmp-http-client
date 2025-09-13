@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
     androidLibrary {
-        namespace = "com.santimattius.kmp.shared"
+        namespace = "com.santimattius.http.client"
         compileSdk = libs.versions.android.compileSdk.get().toInt()
         minSdk = libs.versions.android.minSdk.get().toInt()
         @OptIn(ExperimentalKotlinGradlePluginApi::class)

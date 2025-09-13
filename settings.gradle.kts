@@ -1,4 +1,4 @@
-rootProject.name = "kmp-basic-template"
+rootProject.name = "kmp-http-client"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
