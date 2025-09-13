@@ -1,9 +1,9 @@
-package com.santimattius.kmp
+package com.santimattius.http
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ComposeAppAndroidUnitTest {
+class SharedCommonTest {
 
     @Test
     fun example() {

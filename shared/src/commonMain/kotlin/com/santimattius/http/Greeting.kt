@@ -1,4 +1,4 @@
-package com.santimattius.kmp
+package com.santimattius.http
 
 class Greeting {
     private val platform = getPlatform()

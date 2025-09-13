@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.santimattius.kmp"
+    namespace = "com.santimattius.http"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
