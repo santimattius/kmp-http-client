@@ -2,7 +2,7 @@ package com.santimattius.http.interceptor
 
 import com.santimattius.http.HttpRequest
 import com.santimattius.http.HttpResponse
-import com.santimattius.http.config.HttpClientConfig
+import com.santimattius.http.config.LogLevel
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.serialization.json.Json
 import kotlin.time.Clock
@@ -15,7 +15,7 @@ import kotlin.time.ExperimentalTime
  * @property logger The logger to use for output
  */
 class LoggingInterceptor(
-    private val level: HttpClientConfig.LogLevel = HttpClientConfig.LogLevel.BASIC,
+    private val level: LogLevel = LogLevel.BASIC,
     private val logger: (String) -> Unit = { println(it) }
 ) : Interceptor {
 
@@ -26,7 +26,7 @@ class LoggingInterceptor(
         val request = chain.request
         
         // Log request
-        if (level != HttpClientConfig.LogLevel.NONE) {
+        if (level != LogLevel.NONE) {
             logRequest(request)
         }
 
@@ -36,7 +36,7 @@ class LoggingInterceptor(
         val duration = endTime - startTime
 
         // Log response
-        if (level != HttpClientConfig.LogLevel.NONE) {
+        if (level != LogLevel.NONE) {
             logResponse(response, duration)
         }
 
@@ -46,14 +46,14 @@ class LoggingInterceptor(
     private fun logRequest(request: HttpRequest) {
         logger("--> ${request.method} ${request.url}")
         
-        if (level >= HttpClientConfig.LogLevel.HEADERS) {
+        if (level >= LogLevel.HEADERS) {
             // Log request headers
             request.headers.forEach { (name, value) ->
                 logger("$name: $value")
             }
             
             // Log request body if present and level is BODY
-            if (level >= HttpClientConfig.LogLevel.BODY && request.body != null) {
+            if (level >= LogLevel.BODY && request.body != null) {
                 logger("")
                 logger(formatBody(request.body))
             }
@@ -64,14 +64,14 @@ class LoggingInterceptor(
     private fun logResponse(response: HttpResponse, duration: kotlin.time.Duration) {
         logger("<-- ${response.status} ${response.url} (${duration.inWholeMilliseconds}ms)")
         
-        if (level >= HttpClientConfig.LogLevel.HEADERS) {
+        if (level >= LogLevel.HEADERS) {
             // Log response headers
             response.headers.forEach { (name, value) ->
                 logger("$name: $value")
             }
             
             // Log response body if present and level is BODY
-            if (level >= HttpClientConfig.LogLevel.BODY && response.body != null) {
+            if (level >= LogLevel.BODY && response.body != null) {
                 logger("")
                 logger(formatBody(response.body))
             }
@@ -97,6 +97,6 @@ class LoggingInterceptor(
  * Creates a logging interceptor with the given log level.
  */
 fun loggingInterceptor(
-    level: HttpClientConfig.LogLevel = HttpClientConfig.LogLevel.BASIC,
+    level: LogLevel = LogLevel.BASIC,
     logger: (String) -> Unit = { println(it) }
 ): Interceptor = LoggingInterceptor(level, logger)

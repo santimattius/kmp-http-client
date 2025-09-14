@@ -60,3 +60,7 @@ kotlin {
         }
     }
 }
+
+skie {
+    isEnabled.set(true)
+}

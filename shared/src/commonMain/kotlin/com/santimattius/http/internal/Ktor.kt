@@ -1,11 +1,12 @@
 package com.santimattius.http.internal
 
 import com.santimattius.http.config.HttpClientConfig
+import com.santimattius.http.config.LogLevel
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.LogLevel as KtorLogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
@@ -44,10 +45,10 @@ internal fun createKtorClient(config: HttpClientConfig): HttpClient {
                     }
                 }
                 level = when (config.logLevel) {
-                    HttpClientConfig.LogLevel.NONE -> LogLevel.NONE
-                    HttpClientConfig.LogLevel.BASIC -> LogLevel.INFO
-                    HttpClientConfig.LogLevel.HEADERS -> LogLevel.HEADERS
-                    HttpClientConfig.LogLevel.BODY -> LogLevel.BODY
+                    LogLevel.NONE -> KtorLogLevel.NONE
+                    LogLevel.BASIC -> KtorLogLevel.INFO
+                    LogLevel.HEADERS -> KtorLogLevel.HEADERS
+                    LogLevel.BODY -> KtorLogLevel.BODY
                 }
             }
         }

@@ -37,7 +37,7 @@ object HttpRequestMapper {
         val body = request.body?.let { buildBody(it, headers) }
         HttpRequestBuilder().apply {
             this.url.takeFrom(url)
-            this.method = HttpMethod.parse(request.method)
+            this.method = HttpMethod.parse(request.method.name.uppercase())
             this.headers.appendAll(headers)
             this.body = body ?: EmptyContent
         }

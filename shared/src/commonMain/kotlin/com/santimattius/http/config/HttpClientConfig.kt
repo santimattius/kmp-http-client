@@ -17,22 +17,22 @@ data class HttpClientConfig(
     val socketTimeout: Long = 30.seconds.inWholeMilliseconds,
     val enableLogging: Boolean = false,
     val logLevel: LogLevel = LogLevel.BASIC,
-) {
-    /**
-     * Logging levels for the HTTP client.
-     * Similar to OkHttp's logging levels but adapted for Ktor.
-     */
-    enum class LogLevel {
-        /** No logs */
-        NONE,
+)
 
-        /** Logs request and response lines */
-        BASIC,
+/**
+ * Logging levels for the HTTP client.
+ * Similar to OkHttp's logging levels but adapted for Ktor.
+ */
+enum class LogLevel {
+    /** No logs */
+    NONE,
 
-        /** Logs request and response lines and their respective headers */
-        HEADERS,
+    /** Logs request and response lines */
+    BASIC,
 
-        /** Logs request and response lines and their respective headers and bodies (if present) */
-        BODY
-    }
+    /** Logs request and response lines and their respective headers */
+    HEADERS,
+
+    /** Logs request and response lines and their respective headers and bodies (if present) */
+    BODY
 }

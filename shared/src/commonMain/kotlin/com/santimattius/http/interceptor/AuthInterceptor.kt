@@ -2,6 +2,10 @@ package com.santimattius.http.interceptor
 
 import com.santimattius.http.HttpResponse
 import com.santimattius.http.exception.UnauthorizedException
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.experimental.ExperimentalObjCRefinement
+import kotlin.native.HiddenFromObjC
 
 /**
  * Interceptor that adds authentication tokens to requests.
@@ -11,7 +15,7 @@ import com.santimattius.http.exception.UnauthorizedException
  * @property tokenPrefix The prefix for the token (default: "Bearer ")
  */
 class AuthInterceptor(
-    private val tokenProvider: suspend () -> String?,
+    private val tokenProvider: TokenProvider,
     private val headerName: String = "Authorization",
     private val tokenPrefix: String = "Bearer "
 ) : Interceptor {
@@ -25,7 +29,7 @@ class AuthInterceptor(
         }
 
         // Get token
-        val token = tokenProvider() ?: return chain.proceed(request)
+        val token = tokenProvider.getToken() ?: return chain.proceed(request)
 
         // Add authorization header
         val headers = request.headers.toMutableMap()
@@ -74,15 +78,35 @@ class TokenRefreshInterceptor(
 /**
  * Creates an authentication interceptor with the given token provider.
  */
+@OptIn(ExperimentalObjCRefinement::class)
+@HiddenFromObjC
 fun authInterceptor(
     headerName: String = "Authorization",
     tokenPrefix: String = "Bearer ",
-    tokenProvider: suspend () -> String?
+    tokenProvider: TokenProvider
 ): Interceptor = AuthInterceptor(tokenProvider, headerName, tokenPrefix)
+
+interface TokenProvider {
+
+    @OptIn(ExperimentalObjCRefinement::class)
+    @HiddenFromObjC
+    suspend fun getToken(): String? {
+        return suspendCancellableCoroutine { continuation ->
+            fetchToken { token ->
+                continuation.resume(token)
+            }
+        }
+    }
+
+    fun fetchToken(onTokenFetched: (String?) -> Unit)
+}
 
 /**
  * Creates a token refresh interceptor.
  */
+
+@OptIn(ExperimentalObjCRefinement::class)
+@HiddenFromObjC
 fun tokenRefreshInterceptor(
     refreshToken: suspend () -> Boolean,
     onUnauthorized: suspend () -> Unit = {}

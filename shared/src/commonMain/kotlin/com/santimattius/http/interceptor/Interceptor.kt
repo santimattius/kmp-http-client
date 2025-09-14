@@ -2,6 +2,8 @@ package com.santimattius.http.interceptor
 
 import com.santimattius.http.HttpRequest
 import com.santimattius.http.HttpResponse
+import kotlin.experimental.ExperimentalObjCRefinement
+import kotlin.native.HiddenFromObjC
 
 /**
  * Interface for intercepting HTTP requests and responses.
@@ -15,6 +17,8 @@ interface Interceptor {
      * @param chain The interceptor chain
      * @return The HTTP response
      */
+    @OptIn(ExperimentalObjCRefinement::class)
+    @HiddenFromObjC
     suspend fun intercept(chain: Chain): HttpResponse
 
     /**
