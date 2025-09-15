@@ -26,6 +26,11 @@ struct iOSApp: App {
             tokenPrefix: "Bearer"
         )
         interceptors.append(authInterceptor)
+        let refreshToken = TokenRefreshInterceptor(
+            refreshToken: IOSRefreshToken(),
+            onUnauthorized: IOSUnauthorized()
+        )
+        interceptors.append(refreshToken)
         interceptors.append(LoggingInterceptor(level: .basic, logger: { (message) in
             print(message)
         }))
@@ -57,22 +62,36 @@ struct iOSApp: App {
     }
 }
 
-class NetworkInterceptor:HttpInterceptor {
-    func intercept(chain: any InterceptorChain, response: @escaping (HttpResponse) -> Void) {
-        //TODO: bad implementation
-        Task{
-            let request = chain.request
-                .doNewBuilder()
-                .queryParam(name: "hello", value: "ios")
-                .build()
-            response(try! await chain.proceed(request: request))
-        }
+class NetworkInterceptor: Interceptor {
+     
+    func __intercept(chain: any InterceptorChain) async throws -> HttpResponse {
+        return try await chain.proceed(request: chain.request)
+    }
+
+    
+}
+
+class IOSTokenProvider:TokenProvider {
+    
+    func __getToken() async throws -> String? {
+        return UUID().uuidString
     }
     
 }
 
-class IOSTokenProvider:TokenProvider{
-    func fetchToken(onTokenFetched: @escaping (String?) -> Void) {
-        onTokenFetched(UUID().uuidString)
+class IOSRefreshToken: RefreshToken {
+    
+    func __isRefreshed() async throws -> KotlinBoolean {
+        return true
     }
+    
 }
+
+class IOSUnauthorized: UnauthorizedCallback{
+     
+    func __onUnauthorized() async throws {
+        print("Hello, World!")
+    }
+
+}
+

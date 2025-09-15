@@ -17,7 +17,7 @@ import kotlinx.serialization.json.Json
 
 typealias KtorHttpClient = HttpClient
 
-val jsonConfig = Json {
+internal val jsonConfig = Json {
     prettyPrint = true
     isLenient = true
     ignoreUnknownKeys = true
@@ -55,8 +55,10 @@ internal fun createKtorClient(config: HttpClientConfig): HttpClient {
 
         // Default headers
         defaultRequest {
+            url(config.baseUrl)
             header(HttpHeaders.Accept, ContentType.Application.Json)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
+            //TODO: remove this header when implement cache
             header(HttpHeaders.CacheControl, "no-cache")
         }
 
