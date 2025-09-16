@@ -63,4 +63,7 @@ kotlin {
 
 skie {
     isEnabled.set(true)
+    swiftBundling {
+        enabled = true
+    }
 }

@@ -5,34 +5,133 @@ import kotlin.time.Duration.Companion.seconds
 /**
  * Configuration class for the HTTP client.
  *
- * @property baseUrl The base URL for all requests
- * @property connectTimeout Connection timeout duration (default: 30 seconds)
- * @property socketTimeout Socket timeout duration (default: 30 seconds)
+ * This class provides a type-safe way to configure various aspects of the HTTP client,
+ * including timeouts, logging, and base URL settings. It uses the builder pattern
+ * for a fluent configuration API.
+ *
+ * ## Example Usage
+ * ```kotlin
+ * // Basic configuration
+ * val config = HttpClientConfig("https://api.example.com")
+ *     .connectTimeout(60_000) // 1 minute
+ *     .socketTimeout(60_000)   // 1 minute
+ *     .enableLogging(true)
+ *     .logLevel(LogLevel.BODY)
+ * ```
+ *
+ * @property baseUrl The base URL for all HTTP requests (e.g., "https://api.example.com")
+ * @property connectTimeout Connection timeout in milliseconds (default: 30 seconds)
+ * @property socketTimeout Read/write timeout in milliseconds (default: 30 seconds)
  * @property enableLogging Whether to enable request/response logging (default: false)
- * @property logLevel The level of logging detail (default: BASIC)
+ * @property logLevel The verbosity level for logging (default: [LogLevel.BASIC])
+ *
+ * @see LogLevel For available logging levels
  */
 data class HttpClientConfig(
     val baseUrl: String,
-    val connectTimeout: Long = 30.seconds.inWholeMilliseconds,
-    val socketTimeout: Long = 30.seconds.inWholeMilliseconds,
+    val connectTimeout: Long,
+    val socketTimeout: Long,
     val enableLogging: Boolean = false,
     val logLevel: LogLevel = LogLevel.BASIC,
-)
+) {
+    /**
+     * Creates a new HTTP client configuration with default values.
+     *
+     * Default values:
+     * - connectTimeout: 30 seconds
+     * - socketTimeout: 30 seconds
+     * - enableLogging: false
+     * - logLevel: LogLevel.BASIC
+     *
+     * @param baseUrl The base URL for all HTTP requests
+     */
+    constructor(baseUrl: String) : this(
+        baseUrl = baseUrl,
+        connectTimeout = 30.seconds.inWholeMilliseconds,
+        socketTimeout = 30.seconds.inWholeMilliseconds,
+        enableLogging = false,
+        logLevel = LogLevel.BASIC
+    )
+
+    /**
+     * Sets the connection timeout.
+     *
+     * @param timeout The timeout in milliseconds
+     * @return A new [HttpClientConfig] with the updated timeout
+     */
+    fun connectTimeout(timeout: Long) = copy(connectTimeout = timeout)
+
+    /**
+     * Sets the socket (read/write) timeout.
+     *
+     * @param timeout The timeout in milliseconds
+     * @return A new [HttpClientConfig] with the updated timeout
+     */
+    fun socketTimeout(timeout: Long) = copy(socketTimeout = timeout)
+
+    /**
+     * Enables or disables request/response logging.
+     *
+     * @param enable Whether to enable logging
+     * @return A new [HttpClientConfig] with logging enabled or disabled
+     */
+    fun enableLogging(enable: Boolean) = copy(enableLogging = enable)
+
+    /**
+     * Sets the logging level.
+     *
+     * @param level The desired logging level
+     * @return A new [HttpClientConfig] with the updated logging level
+     * @see LogLevel For available logging levels
+     */
+    fun logLevel(level: LogLevel) = copy(logLevel = level)
+}
 
 /**
- * Logging levels for the HTTP client.
- * Similar to OkHttp's logging levels but adapted for Ktor.
+ * Defines the verbosity of HTTP request/response logging.
+ *
+ * This enum is similar to OkHttp's logging levels but adapted for Ktor.
+ * The logging levels are hierarchical - each level includes all the information
+ * from the previous levels plus additional details.
+ *
+ * @see HttpClientConfig For configuring the logging level
  */
 enum class LogLevel {
-    /** No logs */
+    /**
+     * No logging.
+     *
+     * Disables all logging output.
+     */
     NONE,
 
-    /** Logs request and response lines */
+    /**
+     * Logs request and response lines.
+     *
+     * Includes:
+     * - Request method and URL
+     * - Response status code and message
+     * - Request duration
+     */
     BASIC,
 
-    /** Logs request and response lines and their respective headers */
+    /**
+     * Logs request and response lines and their respective headers.
+     *
+     * Includes everything from [BASIC], plus:
+     * - Request headers
+     * - Response headers
+     */
     HEADERS,
 
-    /** Logs request and response lines and their respective headers and bodies (if present) */
+    /**
+     * Logs request and response lines, headers, and bodies.
+     *
+     * Includes everything from [HEADERS], plus:
+     * - Request body (if present)
+     * - Response body (if present)
+     *
+     * Note: Be cautious when using this level in production as it may log
+     * sensitive information such as authentication tokens or personal data.
+     */
     BODY
 }

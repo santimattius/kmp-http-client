@@ -15,35 +15,85 @@ import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 
+/**
+ * Internal package containing Ktor HTTP client implementation details.
+ * 
+ * This package provides the underlying HTTP client implementation using Ktor's multiplatform
+ * HTTP client. It handles the low-level details of HTTP communication, including:
+ * - Connection management
+ * - Request/response serialization
+ * - Timeout configuration
+ * - Logging
+ * - Default headers
+ * 
+ * @see com.santimattius.http.HttpClient For the public API that uses this implementation
+ */
+
+/**
+ * Type alias for the Ktor HTTP client.
+ * 
+ * This is used internally to abstract the underlying HTTP client implementation
+ * and make it easier to swap out if needed in the future.
+ */
 typealias KtorHttpClient = HttpClient
 
+/**
+ * Default JSON configuration used for request/response serialization.
+ * 
+ * This configuration:
+ * - Pretty-prints JSON for better readability in logs
+ * - Is lenient with JSON parsing
+ * - Ignores unknown JSON keys during deserialization
+ */
 internal val jsonConfig = Json {
     prettyPrint = true
     isLenient = true
     ignoreUnknownKeys = true
 }
-internal fun createKtorClient(config: HttpClientConfig): HttpClient {
+/**
+ * Creates and configures a new Ktor HTTP client instance.
+ * 
+ * This function sets up the HTTP client with the following features:
+ * - Configurable timeouts
+ * - JSON serialization/deserialization
+ * - Logging (if enabled)
+ * - Default headers (Content-Type, Accept, etc.)
+ * - Redirect following
+ * 
+ * @param config The configuration to apply to the HTTP client
+ * @return A configured [KtorHttpClient] instance
+ * 
+ * @see HttpClientConfig For available configuration options
+ * @see KtorHttpClient For the underlying HTTP client implementation
+ */
+internal fun createKtorClient(config: HttpClientConfig): KtorHttpClient {
     return HttpClient {
-        // Configure timeouts
+        // Configure timeouts for different phases of the request
         install(HttpTimeout) {
+            // Maximum time to wait for the entire request (including body) to complete
             requestTimeoutMillis = config.connectTimeout
+            // Maximum time to wait for the initial connection to be established
             connectTimeoutMillis = config.connectTimeout
+            // Maximum time between data packets when reading the response
             socketTimeoutMillis = config.socketTimeout
         }
 
-        // Configure JSON serialization
+        // Configure JSON serialization/deserialization
         install(ContentNegotiation) {
+            // Use the shared JSON configuration for consistent serialization
             json(jsonConfig)
         }
 
-        // Configure logging if enabled
+        // Configure logging if enabled in the config
         if (config.enableLogging) {
             install(Logging) {
+                // Custom logger that prefixes all messages with [HTTP CLIENT]
                 logger = object : Logger {
                     override fun log(message: String) {
-                        println("[Ktor] $message")
+                        println("[HTTP CLIENT] $message")
                     }
                 }
+                // Map our LogLevel to Ktor's LogLevel
                 level = when (config.logLevel) {
                     LogLevel.NONE -> KtorLogLevel.NONE
                     LogLevel.BASIC -> KtorLogLevel.INFO
@@ -53,17 +103,23 @@ internal fun createKtorClient(config: HttpClientConfig): HttpClient {
             }
         }
 
-        // Default headers
+        // Configure default request settings
         defaultRequest {
+            // Set the base URL for all requests
             url(config.baseUrl)
+            
+            // Set default headers for all requests
             header(HttpHeaders.Accept, ContentType.Application.Json)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            //TODO: remove this header when implement cache
+            
+            // Temporary cache control header
+            // TODO: Remove or make configurable when implementing proper caching
             header(HttpHeaders.CacheControl, "no-cache")
         }
 
-        // Follow redirects
-        expectSuccess = false
-        followRedirects = true
+        // Configure client behavior
+        // TODO: Remove or make configurable when implementing proper's
+        expectSuccess = false  // Don't throw exceptions on HTTP error status codes
+        followRedirects = true  // Automatically follow HTTP redirects
     }
 }
