@@ -1,12 +1,14 @@
 package com.santimattius.http.internal
 
+import com.santimattius.http.internal.cache.getCacheDirectoryProvider
 import com.santimattius.http.config.HttpClientConfig
 import com.santimattius.http.config.LogLevel
+import com.santimattius.http.internal.cache.configureCache
+import com.santimattius.http.internal.cache.disableCaching
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.LogLevel as KtorLogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.header
@@ -14,10 +16,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
+import io.ktor.client.plugins.logging.LogLevel as KtorLogLevel
 
 /**
  * Internal package containing Ktor HTTP client implementation details.
- * 
+ *
  * This package provides the underlying HTTP client implementation using Ktor's multiplatform
  * HTTP client. It handles the low-level details of HTTP communication, including:
  * - Connection management
@@ -25,13 +28,13 @@ import kotlinx.serialization.json.Json
  * - Timeout configuration
  * - Logging
  * - Default headers
- * 
+ *
  * @see com.santimattius.http.HttpClient For the public API that uses this implementation
  */
 
 /**
  * Type alias for the Ktor HTTP client.
- * 
+ *
  * This is used internally to abstract the underlying HTTP client implementation
  * and make it easier to swap out if needed in the future.
  */
@@ -39,7 +42,7 @@ typealias KtorHttpClient = HttpClient
 
 /**
  * Default JSON configuration used for request/response serialization.
- * 
+ *
  * This configuration:
  * - Pretty-prints JSON for better readability in logs
  * - Is lenient with JSON parsing
@@ -50,23 +53,26 @@ internal val jsonConfig = Json {
     isLenient = true
     ignoreUnknownKeys = true
 }
+
 /**
  * Creates and configures a new Ktor HTTP client instance.
- * 
+ *
  * This function sets up the HTTP client with the following features:
  * - Configurable timeouts
  * - JSON serialization/deserialization
  * - Logging (if enabled)
  * - Default headers (Content-Type, Accept, etc.)
  * - Redirect following
- * 
+ *
  * @param config The configuration to apply to the HTTP client
  * @return A configured [KtorHttpClient] instance
- * 
+ *
  * @see HttpClientConfig For available configuration options
  * @see KtorHttpClient For the underlying HTTP client implementation
  */
-internal fun createKtorClient(config: HttpClientConfig): KtorHttpClient {
+internal fun createKtorClient(
+    config: HttpClientConfig,
+): KtorHttpClient {
     return HttpClient {
         // Configure timeouts for different phases of the request
         install(HttpTimeout) {
@@ -103,18 +109,23 @@ internal fun createKtorClient(config: HttpClientConfig): KtorHttpClient {
             }
         }
 
+        if (config.cache.enabled) {
+            configureCache(config.cache, getCacheDirectoryProvider())
+        } else {
+            disableCaching()
+        }
         // Configure default request settings
         defaultRequest {
             // Set the base URL for all requests
             url(config.baseUrl)
-            
+
             // Set default headers for all requests
             header(HttpHeaders.Accept, ContentType.Application.Json)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-            
+
             // Temporary cache control header
             // TODO: Remove or make configurable when implementing proper caching
-            header(HttpHeaders.CacheControl, "no-cache")
+            //header(HttpHeaders.CacheControl, "no-cache")
         }
 
         // Configure client behavior

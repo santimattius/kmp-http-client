@@ -1,60 +1,11 @@
 import SwiftUI
 import Shared
 
-class OkHttpInterceptor: Interceptor {
-     
-    func __intercept(chain: any InterceptorChain) async throws -> HttpResponse {
-        return try await chain.proceed(request: chain.request)
-    }
-    
-}
-
-struct Picture : Decodable {
-    let id : String?
-    let author : String?
-    let width : Int?
-    let height : Int?
-    let url : String?
-    let download_url : String?
-}
-
 @main
 struct iOSApp: App {
     
-    init(){
-        let baseUrl = "https://api-picture.onrender.com"
-        let timeout:Int64 = 10000
+    init() {
         initHttpClient()
-        var interceptors: [Interceptor] = []
-        interceptors.append(OkHttpInterceptor())
-        
-        //TODO: create HttpClient
-        let config = HttpClientConfig(
-            baseUrl: baseUrl,
-        ).logLevel(level: .basic)
-            .connectTimeout(timeout: timeout)
-            .enableLogging(enable: true)
-        
-        let client = HttpClient.shared.create(config: config)
-            .addInterceptors(interceptors: interceptors)
-        
-        Task {
-            do{
-                let response =  try! await client.execute(
-                    request: HttpRequest
-                        .companion
-                        .get(url: "\(baseUrl)/random")
-                        //.queryParam(name: "key", value: "value")
-                        .build()
-                )
-                let picture = try await response.getBodyAs(Picture.self)
-                print("Hello Picture Author: \(String(describing: picture.author))")
-            }catch let e{
-                print(e)
-            }
-            
-        }
-        
     }
     
     var body: some Scene {

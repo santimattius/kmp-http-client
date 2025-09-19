@@ -27,12 +27,43 @@ import kotlin.time.Duration.Companion.seconds
  *
  * @see LogLevel For available logging levels
  */
+/**
+ * Configuration for HTTP caching.
+ *
+ * @property enabled Whether caching is enabled (default: false)
+ * @property cacheDirectory Custom cache directory name (default: "http_cache")
+ * @property maxCacheSize Maximum cache size in bytes (default: 10MB)
+ * @property cacheTtl Time-to-live for cache entries in milliseconds (default: 1 hour)
+ */
+data class CacheConfig(
+    val enabled: Boolean = false,
+    val cacheDirectory: String = "http_cache",
+    val maxCacheSize: Long = 10L * 1024 * 1024, // 10 MB
+    val cacheTtl: Long = 60 * 60 * 1000 // 1 hour
+) {
+    constructor(enable: Boolean, cacheDirectory: String) : this(
+        enabled = enable,
+        cacheDirectory = cacheDirectory
+    )
+}
+
+/**
+ * Configuration for the HTTP client.
+ *
+ * @property baseUrl The base URL for all HTTP requests (e.g., "https://api.example.com")
+ * @property connectTimeout Connection timeout in milliseconds (default: 30 seconds)
+ * @property socketTimeout Read/write timeout in milliseconds (default: 30 seconds)
+ * @property enableLogging Whether to enable request/response logging (default: false)
+ * @property logLevel The verbosity level for logging (default: [LogLevel.BASIC])
+ * @property cache Configuration for HTTP caching (default: disabled)
+ */
 data class HttpClientConfig(
     val baseUrl: String,
     val connectTimeout: Long,
     val socketTimeout: Long,
     val enableLogging: Boolean = false,
     val logLevel: LogLevel = LogLevel.BASIC,
+    val cache: CacheConfig = CacheConfig()
 ) {
     /**
      * Creates a new HTTP client configuration with default values.
@@ -45,10 +76,24 @@ data class HttpClientConfig(
      *
      * @param baseUrl The base URL for all HTTP requests
      */
-    constructor(baseUrl: String) : this(
+    /**
+     * Creates a new HTTP client configuration with default values.
+     *
+     * Default values:
+     * - connectTimeout: 30 seconds
+     * - socketTimeout: 30 seconds
+     * - enableLogging: false
+     * - logLevel: LogLevel.BASIC
+     * - cache: Disabled by default
+     *
+     * @param baseUrl The base URL for all HTTP requests
+     */
+    constructor(
+        baseUrl: String,
+    ) : this(
         baseUrl = baseUrl,
-        connectTimeout = 30.seconds.inWholeMilliseconds,
-        socketTimeout = 30.seconds.inWholeMilliseconds,
+        connectTimeout = 10.seconds.inWholeMilliseconds,
+        socketTimeout = 10.seconds.inWholeMilliseconds,
         enableLogging = false,
         logLevel = LogLevel.BASIC
     )
@@ -85,6 +130,14 @@ data class HttpClientConfig(
      * @see LogLevel For available logging levels
      */
     fun logLevel(level: LogLevel) = copy(logLevel = level)
+
+    /**
+     * Sets the cache configuration.
+     *
+     * @param cacheConfig The cache configuration
+     * @return A new [HttpClientConfig] with the updated cache configuration
+     */
+    fun cache(cacheConfig: CacheConfig) = copy(cache = cacheConfig)
 }
 
 /**

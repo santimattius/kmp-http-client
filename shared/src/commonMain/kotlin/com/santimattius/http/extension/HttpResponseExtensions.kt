@@ -1,10 +1,12 @@
-package com.santimattius.http.util
+package com.santimattius.http.extension
 
 import com.santimattius.http.HttpResponse
 import com.santimattius.http.exception.ParseException
 import com.santimattius.http.internal.jsonConfig
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.serializer
+import kotlin.experimental.ExperimentalObjCRefinement
+import kotlin.native.HiddenFromObjC
 
 /**
  * Utility functions for working with HTTP responses.
@@ -32,11 +34,13 @@ import kotlinx.serialization.serializer
  * @throws ParseException if the response body is null, not a string, or cannot be deserialized
  *                       into the specified type
  *
- * @see parseBody For the version that accepts an explicit serializer
+ * @see getBodyAs For the version that accepts an explicit serializer
  * @see KSerializer For more information about Kotlinx Serialization
  */
-inline fun <reified T> HttpResponse.parseBody(): T {
-    return parseBody(serializer())
+@OptIn(ExperimentalObjCRefinement::class)
+@HiddenFromObjC
+inline fun <reified T> HttpResponse.getBodyAs(): T {
+    return getBodyAs(serializer())
 }
 
 /**
@@ -62,10 +66,12 @@ inline fun <reified T> HttpResponse.parseBody(): T {
  * @throws ParseException if the response body is null, not a string, or cannot be deserialized
  *                       using the provided serializer
  *
- * @see parseBody For the version that infers the serializer from the type parameter
+ * @see getBodyAs For the version that infers the serializer from the type parameter
  * @see KSerializer For more information about Kotlinx Serialization
  */
-fun <T> HttpResponse.parseBody(serializer: KSerializer<T>): T {
+@OptIn(ExperimentalObjCRefinement::class)
+@HiddenFromObjC
+fun <T> HttpResponse.getBodyAs(serializer: KSerializer<T>): T {
     val body = body ?: throw ParseException(
         "Response body is null or not a string. Status: $status, URL: $url"
     )

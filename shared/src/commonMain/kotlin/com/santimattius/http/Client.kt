@@ -59,5 +59,8 @@ interface Client : AutoCloseable {
      * ```
      */
     fun addInterceptors(interceptors: List<Interceptor>): Client
+    fun addInterceptors(interceptor: Interceptor): Client{
+        return addInterceptors(listOf(interceptor))
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.santimattius.http
 
+import com.santimattius.http.HttpClient.initialize
 import com.santimattius.http.config.HttpClientConfig
 import com.santimattius.http.interceptor.Interceptor
 import com.santimattius.http.internal.KtorClient
@@ -73,7 +74,7 @@ object HttpClient {
         interceptors: List<Interceptor> = emptyList()
     ) {
         require(defaultConfig == null) { "Default config already initialized. Call this method only once during app startup." }
-        this.defaultConfig = config.copy()
+        this.defaultConfig = config
         this.interceptors = interceptors
         this.defaultClient = create(config, interceptors)
     }
@@ -84,7 +85,6 @@ object HttpClient {
      * @return The default [Client] instance
      * @throws IllegalStateException if [initialize] hasn't been called
      *
-     * @sample com.santimattius.http.samples.defaultClientSample
      */
     fun defaultClient(): Client {
         return defaultClient ?: throw IllegalStateException(
@@ -103,6 +103,11 @@ object HttpClient {
         )
     }
 
+    fun create(baseUrl: String): Client {
+        val config = defaultConfig ?: HttpClientConfig(baseUrl = baseUrl)
+        return create(config.copy(baseUrl))
+    }
+
     /**
      * Creates a new HTTP client with the given configuration.
      *
@@ -112,7 +117,6 @@ object HttpClient {
      * @param config The configuration for the new client
      * @return A new [Client] instance
      *
-     * @sample com.santimattius.http.samples.createClientSample
      */
     fun create(config: HttpClientConfig): Client {
         return create(config, interceptors)
@@ -133,16 +137,9 @@ object HttpClient {
         config: HttpClientConfig,
         interceptors: List<Interceptor>
     ): Client {
-        // Merge with default config if available, using the provided config as fallback
         return KtorClient.create(
-            config.copy(
-                baseUrl = defaultConfig?.baseUrl ?: config.baseUrl,
-                connectTimeout = defaultConfig?.connectTimeout ?: config.connectTimeout,
-                socketTimeout = defaultConfig?.socketTimeout ?: config.socketTimeout,
-                enableLogging = defaultConfig?.enableLogging ?: config.enableLogging,
-                logLevel = defaultConfig?.logLevel ?: config.logLevel
-            ),
-            interceptors
+            config = config,
+            interceptors = interceptors
         )
     }
 }
