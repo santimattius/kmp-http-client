@@ -99,7 +99,11 @@ internal class KtorClient private constructor(
      * @throws Exception if the request fails or if the response cannot be processed
      */
     private suspend fun executeKtorRequest(request: HttpRequest): HttpResponse {
-        val httpRequestBuilder = request.toKtorRequest().getOrThrow()
+        val requestBuilder = request.newBuilder()
+        if (request.url.startsWith("/")) {
+            requestBuilder.url = config.baseUrl + request.url
+        }
+        val httpRequestBuilder = requestBuilder.build().toKtorRequest().getOrThrow()
         return client.request(builder = httpRequestBuilder).toHttpResponse()
     }
 

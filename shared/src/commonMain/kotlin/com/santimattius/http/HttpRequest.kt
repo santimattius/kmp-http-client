@@ -2,17 +2,17 @@ package com.santimattius.http
 
 /**
  * Represents an HTTP request with common properties and methods.
- * 
+ *
  * This class encapsulates all the necessary components of an HTTP request including:
  * - HTTP method (GET, POST, PUT, etc.)
  * - Target URL
  * - Request headers
  * - Query parameters
  * - Request body (optional)
- * 
+ *
  * Instances of this class are immutable. To modify a request, use the [newBuilder] method
  * to create a modified copy.
- * 
+ *
  * @property method The HTTP method for this request
  * @property url The target URL for this request
  * @property headers Map of HTTP headers to include in the request
@@ -30,7 +30,7 @@ data class HttpRequest(
     /**
      * Creates a new [Builder] instance initialized with this request's properties.
      * This allows for easy modification of an existing request by creating a modified copy.
-     * 
+     *
      * @return A new [Builder] instance with all properties copied from this request
      */
     fun newBuilder(): Builder {
@@ -45,13 +45,14 @@ data class HttpRequest(
         }.headers(headers)
             .queryParams(queryParameters)
     }
+
     /**
      * Builder class for creating and configuring [HttpRequest] instances.
-     * 
+     *
      * This builder provides a fluent API for constructing HTTP requests with various
      * configurations. It supports setting headers, query parameters, and request bodies
      * in a type-safe and builder-pattern style.
-     * 
+     *
      * Example usage:
      * ```kotlin
      * val request = HttpRequest.get("https://api.example.com/data")
@@ -65,15 +66,21 @@ data class HttpRequest(
         internal var url: String
     ) {
 
+        internal var path: String = ""
+
         /** Internal storage for request headers */
         internal val headers = mutableMapOf<String, String>()
-        
+
         /** Internal storage for URL query parameters */
         internal val queryParameters = mutableMapOf<String, String>()
-        
+
         /** Internal storage for the request body */
         internal var body: Any? = null
 
+
+        open fun path(path: String) = apply {
+            this.path = path
+        }
         /**
          * Adds a single header to the request.
          *
@@ -122,6 +129,9 @@ data class HttpRequest(
          */
         fun build(): HttpRequest {
             require(url.isNotBlank()) { "URL must not be blank" }
+            if (path.isNotBlank()) {
+                url = "$url$path"
+            }
             return HttpRequest(method, url, headers, queryParameters, body)
         }
     }
@@ -137,6 +147,10 @@ data class HttpRequest(
      */
     class BodyAwareBuilder internal constructor(method: HttpMethod, url: String) :
         Builder(method, url) {
+
+        override fun path(path: String) = apply {
+            super.path(path)
+        }
         /**
          * Sets the request body.
          *
