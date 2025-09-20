@@ -1,10 +1,10 @@
 package com.santimattius.http.internal
 
-import com.santimattius.http.internal.cache.getCacheDirectoryProvider
 import com.santimattius.http.config.HttpClientConfig
 import com.santimattius.http.config.LogLevel
 import com.santimattius.http.internal.cache.configureCache
 import com.santimattius.http.internal.cache.disableCaching
+import com.santimattius.http.internal.cache.getCacheDirectoryProvider
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -118,19 +118,9 @@ internal fun createKtorClient(
         defaultRequest {
             // Set the base URL for all requests
             url(config.baseUrl)
-
             // Set default headers for all requests
             header(HttpHeaders.Accept, ContentType.Application.Json)
             header(HttpHeaders.ContentType, ContentType.Application.Json)
-
-            // Temporary cache control header
-            // TODO: Remove or make configurable when implementing proper caching
-            //header(HttpHeaders.CacheControl, "no-cache")
         }
-
-        // Configure client behavior
-        // TODO: Remove or make configurable when implementing proper's
-        expectSuccess = false  // Don't throw exceptions on HTTP error status codes
-        followRedirects = true  // Automatically follow HTTP redirects
     }
 }
