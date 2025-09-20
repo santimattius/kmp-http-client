@@ -34,7 +34,7 @@ repositories {
 
 dependencies {
     // Replace with actual coordinates when publishing
-    implementation("com.santimattius:http-client:<version>")
+    implementation("io.github.santimattius.kmp:http-client:<version>")
 }
 ```
 
@@ -44,11 +44,11 @@ Notes:
 
 ### iOS
 
-The generated framework is called `HttpClient` (defined in `shared/build.gradle.kts` with `baseName = "HttpClient"`). Integration options:
+The generated framework is called `KMPHttpClient` (defined in `shared/build.gradle.kts` with `baseName = "KMPHttpClient"`). Integration options:
 
-- Xcode + KMP plugin: include `shared` and let Gradle generate `HttpClient.framework`.
-- Prebuilt XCFramework: create `HttpClient.xcframework` and add it to your iOS project.
-- Swift Package Manager wrapper: define a `Package.swift` pointing to the published `HttpClient.xcframework` (binary target).
+- Xcode + KMP plugin: include `shared` and let Gradle generate `KMPHttpClient.framework`.
+- Prebuilt XCFramework: create `KMPHttpClient.xcframework` and add it to your iOS project.
+- Swift Package Manager wrapper: define a `Package.swift` pointing to the published `KMPHttpClient.xcframework` (binary target).
 
 Example with SwiftPM (binary target):
 ```swift
@@ -56,13 +56,13 @@ Example with SwiftPM (binary target):
 import PackageDescription
 
 let package = Package(
-    name: "HttpClient",
+    name: "KMPHttpClient",
     platforms: [ .iOS(.v14) ],
-    products: [ .library(name: "HttpClient", targets: ["Shared"]) ],
+    products: [ .library(name: "KMPHttpClient", targets: ["KMPHttpClient"]) ],
     targets: [
         .binaryTarget(
-            name: "HttpClient",
-            url: "https://github.com/your-org/kmp-http-client/releases/download/1.0.0/HttpClient.xcframework.zip",
+            name: "KMPHttpClient",
+            url: "https://github.com/your-org/kmp-http-client/releases/download/1.0.0/KMPHttpClient.xcframework.zip",
             checksum: "<swiftpm-checksum>"
         )
     ]
@@ -71,7 +71,7 @@ let package = Package(
 
 In Swift:
 ```swift
-import HttpClient
+import KMPHttpClient
 ```
 
 Skie is enabled to improve Swift interoperability:
@@ -169,7 +169,7 @@ val customClient = com.santimattius.http.HttpClient.create(
 You can also implement your own interceptors using the `Interceptor` interface/protocol:
 
 ```swift
-import Shared
+import KMPHttpClient
 
 class OkHttpInterceptor: Interceptor {
      
@@ -184,7 +184,7 @@ class OkHttpInterceptor: Interceptor {
 **Swift interop with JSON decoding:**
 ```swift
 import Foundation
-import Shared
+import KMPHttpClient
 
 struct User: Decodable { let id: Int; let name: String }
 
