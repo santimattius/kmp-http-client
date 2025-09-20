@@ -70,7 +70,6 @@ interface Interceptor {
          * @return The HTTP response, which may have been modified by subsequent interceptors
          * @throws Exception if the request fails or a subsequent interceptor throws an exception
          *
-         * @sample com.santimattius.http.interceptor.samples.chainProceedSample
          */
         suspend fun proceed(request: HttpRequest): HttpResponse
     }

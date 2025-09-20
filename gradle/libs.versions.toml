@@ -4,6 +4,7 @@ kotlin = "2.2.10"
 kotlinxSerializationJson = "1.9.0"
 kotlinxSerializationProtobuf = "1.9.0"
 skie = "0.10.6"
+mavenPublish = "0.30.0"
 
 android-compileSdk = "36"
 android-minSdk = "24"
@@ -91,3 +92,4 @@ kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", versio
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 skie = { id = "co.touchlab.skie", version.ref = "skie" }
+mavenPublish = { id = "com.vanniktech.maven.publish", version.ref = "mavenPublish" }

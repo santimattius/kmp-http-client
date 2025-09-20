@@ -4,7 +4,7 @@
 //
 //  Created by Santiago Mattiauda on 18/9/25.
 //
-import Shared
+import KMPHttpClient
 
 class OkHttpInterceptor: Interceptor {
      

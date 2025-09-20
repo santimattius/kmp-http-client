@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import Shared
+import KMPHttpClient
 
 public extension HttpResponse {
     func getBodyAs<T: Decodable>(_ type: T.Type) async throws -> T {

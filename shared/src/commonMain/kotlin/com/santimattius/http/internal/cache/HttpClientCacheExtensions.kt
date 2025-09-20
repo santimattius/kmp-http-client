@@ -18,16 +18,16 @@ internal fun HttpClientConfig<*>.configureCache(
     if (!config.enabled) return
 
     install(HttpCache) {
-        privateStorage(
-            OkioFileCacheStorage(
-                OkioFileCacheConfig(
-                    fileName = config.cacheDirectory,
-                    maxSize = config.maxCacheSize,
-                    ttl = config.cacheTtl,
-                    cacheDirectoryProvider = cacheDirectoryProvider
-                )
+        isShared = config.isShared
+        val storage = OkioFileCacheStorage(
+            config = OkioFileCacheConfig(
+                fileName = config.cacheDirectory,
+                maxSize = config.maxCacheSize,
+                ttl = config.cacheTtl,
+                cacheDirectoryProvider = cacheDirectoryProvider
             )
         )
+        privateStorage(storage)
     }
 }
 

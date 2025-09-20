@@ -39,7 +39,8 @@ data class CacheConfig(
     val enabled: Boolean = false,
     val cacheDirectory: String = "http_cache",
     val maxCacheSize: Long = 10L * 1024 * 1024, // 10 MB
-    val cacheTtl: Long = 60 * 60 * 1000 // 1 hour
+    val cacheTtl: Long = 60 * 60 * 1000, // 1 hour
+    val isShared:Boolean = true
 ) {
     constructor(enable: Boolean, cacheDirectory: String) : this(
         enabled = enable,

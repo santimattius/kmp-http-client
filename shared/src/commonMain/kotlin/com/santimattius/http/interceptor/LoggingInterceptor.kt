@@ -71,7 +71,6 @@ class LoggingInterceptor @JvmOverloads constructor(
      * @param chain The interceptor chain
      * @return The HTTP response from the server
      *
-     * @sample com.santimattius.http.interceptor.samples.loggingInterceptorSample
      */
     @OptIn(ExperimentalTime::class)
     override suspend fun intercept(chain: Interceptor.Chain): HttpResponse {

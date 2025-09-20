@@ -23,10 +23,10 @@ import kotlin.native.HiddenFromObjC
  * ## Example Usage
  * ```kotlin
  * // Parse response as a User object
- * val user: User = httpResponse.parseBody()
+ * val user: User = httpResponse.getBodyAs()
  *
  * // Parse response as a list of Users
- * val users: List<User> = httpResponse.parseBody()
+ * val users: List<User> = httpResponse.getBodyAs()
  * ```
  *
  * @param T The type to parse the response into (must be serializable)
@@ -52,11 +52,11 @@ inline fun <reified T> HttpResponse.getBodyAs(): T {
  * ## Example Usage
  * ```kotlin
  * // With a custom serializer
- * val user = httpResponse.parseBody(User.serializer())
+ * val user = httpResponse.getBodyAs(User.serializer())
  *
  * // With a generic type
  * fun <T> parseResponse(response: HttpResponse, serializer: KSerializer<T>): T {
- *     return response.parseBody(serializer)
+ *     return response.getBodyAs(serializer)
  * }
  * ```
  *

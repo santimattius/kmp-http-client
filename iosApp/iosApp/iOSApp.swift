@@ -1,5 +1,5 @@
 import SwiftUI
-import Shared
+import KMPHttpClient
 
 @main
 struct iOSApp: App {

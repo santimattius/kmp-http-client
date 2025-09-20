@@ -58,7 +58,6 @@ class ErrorHandlingInterceptor : Interceptor {
      * @return The HTTP response if it's successful (status code < 400)
      * @throws com.santimattius.http.exception.HttpException If the response has an error status code
      *
-     * @sample com.santimattius.http.interceptor.samples.errorHandlingSample
      */
     override suspend fun intercept(chain: Interceptor.Chain): HttpResponse {
         // Proceed with the request to get the response
@@ -66,7 +65,8 @@ class ErrorHandlingInterceptor : Interceptor {
 
         // Check for error status codes (400-599)
         if (response.status in 400..599) {
-            val errorMessage = "HTTP ${response.status}: ${response.body?.takeIf { it.isNotBlank() } ?: "No error details"}"
+            val errorMessage =
+                "HTTP ${response.status}: ${response.body?.takeIf { it.isNotBlank() } ?: "No error details"}"
             throw statusCodeToException(
                 code = response.status,
                 errorBody = response.body,
