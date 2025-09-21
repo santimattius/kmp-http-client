@@ -190,12 +190,12 @@ struct User: Decodable { let id: Int; let name: String }
 
 @MainActor
 func loadUsers() async throws -> [User] {
-    let request = HttpRequest.Companion().get("https://api.example.com")
+    let request = HttpRequest.companion.get("https://api.example.com")
         .path("/users")
         .header(name: "Accept", value: "application/json")
         .build()
 
-    let client = HttpClient().defaultClient()
+    let client = HttpClient.shared.defaultClient()
     let response = try await client.execute(request: request)
     return try response.getBodyAs([User].self)
 }
