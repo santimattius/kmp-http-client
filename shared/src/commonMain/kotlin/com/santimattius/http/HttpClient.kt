@@ -67,8 +67,8 @@ object HttpClient {
      * @param interceptors Optional list of interceptors to apply to all client instances
      * @throws IllegalStateException if called more than once
      *
-     * @sample com.santimattius.http.samples.initializeSample
      */
+    @Throws(IllegalArgumentException::class)
     fun initialize(
         config: HttpClientConfig,
         interceptors: List<Interceptor> = emptyList()
@@ -86,6 +86,7 @@ object HttpClient {
      * @throws IllegalStateException if [initialize] hasn't been called
      *
      */
+    @Throws(IllegalStateException::class)
     fun defaultClient(): Client {
         return defaultClient ?: throw IllegalStateException(
             """
