@@ -4,12 +4,16 @@ import com.santimattius.http.Client
 import com.santimattius.http.HttpRequest
 import com.santimattius.http.HttpResponse
 import com.santimattius.http.config.HttpClientConfig
+import com.santimattius.http.exception.ClientException
+import com.santimattius.http.exception.HttpException
+import com.santimattius.http.interceptor.ErrorHandlingInterceptor
 import com.santimattius.http.interceptor.Interceptor
 import com.santimattius.http.internal.requests.toKtorRequest
 import io.ktor.client.request.request
 import io.ktor.client.statement.bodyAsText
 import io.ktor.client.statement.request
 import io.ktor.util.toMap
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Internal implementation of the [Client] interface using Ktor's HTTP client.
@@ -62,13 +66,21 @@ internal class KtorClient private constructor(
      * @throws Exception if the request fails or if any interceptor throws an exception
      */
     override suspend fun execute(request: HttpRequest): HttpResponse {
-        val chain = RealInterceptorChain(
-            request = request,
-            interceptors = interceptors,
-            index = 0,
-            call = { req -> executeKtorRequest(req) }
-        )
-        return chain.proceed(request)
+        try {
+            val chain = RealInterceptorChain(
+                request = request,
+                interceptors = interceptors,
+                index = 0,
+                call = { req -> executeKtorRequest(req) }
+            )
+            return chain.proceed(request)
+        } catch (ex: Throwable) {
+            when (ex) {
+                is HttpException -> throw ex
+                is CancellationException -> throw ex
+                else -> throw ClientException(ex.message, ex)
+            }
+        }
     }
 
     /**
@@ -123,7 +135,7 @@ internal class KtorClient private constructor(
             headers = headers.toMap().mapValues { it.value.joinToString(",") },
             body = try {
                 bodyAsText()
-            } catch (e: Exception) {
+            } catch (_: Throwable) {
                 null
             }
         )
@@ -151,7 +163,9 @@ internal class KtorClient private constructor(
             config: HttpClientConfig,
             interceptors: List<Interceptor> = emptyList()
         ): Client {
-            return KtorClient(config, interceptors)
+            val updatedInterceptors = interceptors.toMutableList()
+            updatedInterceptors.add(ErrorHandlingInterceptor())
+            return KtorClient(config, updatedInterceptors)
         }
     }
 }

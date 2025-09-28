@@ -1,6 +1,9 @@
 package com.santimattius.http
 
+import com.santimattius.http.exception.ClientException
+import com.santimattius.http.exception.HttpException
 import com.santimattius.http.interceptor.Interceptor
+import kotlinx.coroutines.CancellationException
 
 /**
  * Interface defining the contract for an HTTP client.
@@ -40,6 +43,10 @@ interface Client : AutoCloseable {
      *         timeouts, or other I/O errors
      * @throws IllegalArgumentException if the request is invalid (e.g., malformed URL)
      */
+    @Throws(
+        IllegalArgumentException::class, HttpException::class,
+        ClientException::class, CancellationException::class
+    )
     suspend fun execute(request: HttpRequest): HttpResponse
 
     /**
@@ -59,7 +66,7 @@ interface Client : AutoCloseable {
      * ```
      */
     fun addInterceptors(interceptors: List<Interceptor>): Client
-    fun addInterceptors(interceptor: Interceptor): Client{
+    fun addInterceptors(interceptor: Interceptor): Client {
         return addInterceptors(listOf(interceptor))
     }
 
