@@ -16,7 +16,7 @@ class ContenViewModel{
     
     init () {
         client = HttpClient.shared.create(config: HttpClientConfig(
-            baseUrl: "https://www.freetogame.com/api",
+            baseUrl: "https://www.freetogame.com/",
         ).logLevel(level: .basic)
             .connectTimeout(timeout: 10000)
             .enableLogging(enable: true)
@@ -40,24 +40,24 @@ class ContenViewModel{
                  let game = try await response.getBodyAs(Game.self)
                  print("Hello Game: \(game)")
                  */
-                let response =  await client.executeAsResult(
+                let response = try await client.execute(
                     request: HttpRequest
                         .companion
-                        .get(url: "/game")
+                        .get(url: "/test")
                         .queryParam(name: "id", value: "475")
                         .build()
                 )
-                switch response {
-                case .success(let httpResponse):
-                    print("Hello Response: \(httpResponse)")
-                    let game = try await httpResponse.getBodyAs(Game.self)
-                    print("Hello Game: \(game)")
-                case .failure(let error):
-                    print(error)
-                }
+//                switch response {
+//                case .success(let httpResponse):
+//                    print("Hello Response: \(httpResponse)")
+//                    let game = try await httpResponse.getBodyAs(Game.self)
+//                    print("Hello Game: \(game)")
+//                case .failure(let error):
+//                    print(error)
+//                }
 
-            }catch let e{
-                print(e)
+            }catch {
+                print("Http Error: \(error)")
             }
             
         }

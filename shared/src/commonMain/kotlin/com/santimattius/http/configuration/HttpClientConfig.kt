@@ -1,32 +1,7 @@
-package com.santimattius.http.config
+package com.santimattius.http.configuration
 
 import kotlin.time.Duration.Companion.seconds
 
-/**
- * Configuration class for the HTTP client.
- *
- * This class provides a type-safe way to configure various aspects of the HTTP client,
- * including timeouts, logging, and base URL settings. It uses the builder pattern
- * for a fluent configuration API.
- *
- * ## Example Usage
- * ```kotlin
- * // Basic configuration
- * val config = HttpClientConfig("https://api.example.com")
- *     .connectTimeout(60_000) // 1 minute
- *     .socketTimeout(60_000)   // 1 minute
- *     .enableLogging(true)
- *     .logLevel(LogLevel.BODY)
- * ```
- *
- * @property baseUrl The base URL for all HTTP requests (e.g., "https://api.example.com")
- * @property connectTimeout Connection timeout in milliseconds (default: 30 seconds)
- * @property socketTimeout Read/write timeout in milliseconds (default: 30 seconds)
- * @property enableLogging Whether to enable request/response logging (default: false)
- * @property logLevel The verbosity level for logging (default: [LogLevel.BASIC])
- *
- * @see LogLevel For available logging levels
- */
 /**
  * Configuration for HTTP caching.
  *

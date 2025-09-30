@@ -1,7 +1,17 @@
 package com.santimattius.http
 
+import com.santimattius.http.exception.BadRequestException
 import com.santimattius.http.exception.ClientException
+import com.santimattius.http.exception.ForbiddenException
+import com.santimattius.http.exception.HttpErrorException
 import com.santimattius.http.exception.HttpException
+import com.santimattius.http.exception.InternalServerErrorException
+import com.santimattius.http.exception.NetworkException
+import com.santimattius.http.exception.NotFoundException
+import com.santimattius.http.exception.ParseException
+import com.santimattius.http.exception.ServiceUnavailableException
+import com.santimattius.http.exception.TimeoutException
+import com.santimattius.http.exception.UnauthorizedException
 import com.santimattius.http.interceptor.Interceptor
 import kotlinx.coroutines.CancellationException
 
@@ -39,13 +49,43 @@ interface Client : AutoCloseable {
      *
      * @param request The HTTP request to execute. Must be a valid request with a non-empty URL.
      * @return The HTTP response containing status code, headers, and body
-     * @throws com.santimattius.http.exception.HttpException if the request fails due to network issues,
-     *         timeouts, or other I/O errors
      * @throws IllegalArgumentException if the request is invalid (e.g., malformed URL)
+     * @throws NetworkException if network connectivity fails
+     * @throws TimeoutException if the request times out
+     * @throws ParseException if response parsing fails
+     * @throws BadRequestException for HTTP 400 errors
+     * @throws UnauthorizedException for HTTP 401 errors
+     * @throws ForbiddenException for HTTP 403 errors
+     * @throws NotFoundException for HTTP 404 errors
+     * @throws InternalServerErrorException for HTTP 500 errors
+     * @throws ServiceUnavailableException for HTTP 503 errors
+     * @throws HttpErrorException for other HTTP error codes (4xx, 5xx)
+     * @throws HttpException for other HTTP-related errors
+     * @throws ClientException for other client-side errors
+     * @throws CancellationException if the coroutine is cancelled
      */
     @Throws(
-        IllegalArgumentException::class, HttpException::class,
-        ClientException::class, CancellationException::class
+        IllegalArgumentException::class,
+        // Network & Timeout
+        NetworkException::class,
+        TimeoutException::class,
+        // Parsing
+        ParseException::class,
+        // HTTP 4xx Errors
+        BadRequestException::class,
+        UnauthorizedException::class,
+        ForbiddenException::class,
+        NotFoundException::class,
+        // HTTP 5xx Errors
+        InternalServerErrorException::class,
+        ServiceUnavailableException::class,
+        // Generic HTTP Error
+        HttpErrorException::class,
+        // Base exceptions
+        HttpException::class,
+        ClientException::class,
+        // Coroutines
+        CancellationException::class
     )
     suspend fun execute(request: HttpRequest): HttpResponse
 

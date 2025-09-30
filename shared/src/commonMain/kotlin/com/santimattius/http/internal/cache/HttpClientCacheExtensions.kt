@@ -1,6 +1,6 @@
 package com.santimattius.http.internal.cache
 
-import com.santimattius.http.config.CacheConfig
+import com.santimattius.http.configuration.CacheConfig
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.cache.HttpCache
 import io.ktor.client.plugins.cache.storage.CacheStorage

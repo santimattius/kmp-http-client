@@ -27,7 +27,7 @@ import kotlin.jvm.JvmOverloads
 open class HttpException(
     message: String? = null,
     cause: Throwable? = null
-) : Throwable(message, cause)
+) : Exception(message, cause)
 
 /**
  * Thrown when the request could not be executed due to a network error.

@@ -2,7 +2,7 @@ package com.santimattius.http.interceptor
 
 import com.santimattius.http.HttpRequest
 import com.santimattius.http.HttpResponse
-import com.santimattius.http.config.LogLevel
+import com.santimattius.http.configuration.LogLevel
 import io.ktor.utils.io.ByteReadChannel
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
@@ -44,7 +44,6 @@ import kotlin.time.ExperimentalTime
  * @property logger The logging function to use (default: prints to standard output)
  *
  * @see LogLevel For available logging levels
- * @see loggingInterceptor For a convenient factory function
  */
 class LoggingInterceptor @JvmOverloads constructor(
     private val level: LogLevel = LogLevel.BASIC,

@@ -1,8 +1,8 @@
 package com.santimattius.http
 
 import android.app.Application
-import com.santimattius.http.config.CacheConfig
-import com.santimattius.http.config.HttpClientConfig
+import com.santimattius.http.configuration.CacheConfig
+import com.santimattius.http.configuration.HttpClientConfig
 
 class MainApplication : Application() {
     override fun onCreate() {
