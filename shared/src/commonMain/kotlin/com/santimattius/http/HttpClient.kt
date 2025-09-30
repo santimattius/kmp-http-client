@@ -1,7 +1,7 @@
 package com.santimattius.http
 
 import com.santimattius.http.HttpClient.initialize
-import com.santimattius.http.config.HttpClientConfig
+import com.santimattius.http.configuration.HttpClientConfig
 import com.santimattius.http.interceptor.Interceptor
 import com.santimattius.http.internal.KtorClient
 

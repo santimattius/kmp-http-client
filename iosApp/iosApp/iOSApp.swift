@@ -46,7 +46,7 @@ func initHttpClient(){
     }))
     
 
-    HttpClient.shared.initialize(config: config, interceptors: interceptors)
+    try! HttpClient.shared.initialize(config: config, interceptors: interceptors)
 }
 
 

@@ -3,9 +3,9 @@ package com.santimattius.http
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.santimattius.http.config.CacheConfig
-import com.santimattius.http.config.HttpClientConfig
-import com.santimattius.http.config.LogLevel
+import com.santimattius.http.configuration.CacheConfig
+import com.santimattius.http.configuration.HttpClientConfig
+import com.santimattius.http.configuration.LogLevel
 import com.santimattius.http.extension.getBodyAs
 import com.santimattius.http.interceptor.Interceptor
 import kotlinx.coroutines.flow.MutableStateFlow

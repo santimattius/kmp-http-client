@@ -39,6 +39,7 @@ import kotlin.native.HiddenFromObjC
  */
 @OptIn(ExperimentalObjCRefinement::class)
 @HiddenFromObjC
+@Throws(ParseException::class)
 inline fun <reified T> HttpResponse.getBodyAs(): T {
     return getBodyAs(serializer())
 }
@@ -71,6 +72,7 @@ inline fun <reified T> HttpResponse.getBodyAs(): T {
  */
 @OptIn(ExperimentalObjCRefinement::class)
 @HiddenFromObjC
+@Throws(ParseException::class)
 fun <T> HttpResponse.getBodyAs(serializer: KSerializer<T>): T {
     val body = body ?: throw ParseException(
         "Response body is null or not a string. Status: $status, URL: $url"

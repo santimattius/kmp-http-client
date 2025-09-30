@@ -1,7 +1,7 @@
 package com.santimattius.http.internal
 
-import com.santimattius.http.config.HttpClientConfig
-import com.santimattius.http.config.LogLevel
+import com.santimattius.http.configuration.HttpClientConfig
+import com.santimattius.http.configuration.LogLevel
 import com.santimattius.http.internal.cache.configureCache
 import com.santimattius.http.internal.cache.disableCaching
 import com.santimattius.http.internal.cache.getCacheDirectoryProvider

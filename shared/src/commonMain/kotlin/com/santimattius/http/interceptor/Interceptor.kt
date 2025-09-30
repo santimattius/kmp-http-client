@@ -2,6 +2,18 @@ package com.santimattius.http.interceptor
 
 import com.santimattius.http.HttpRequest
 import com.santimattius.http.HttpResponse
+import com.santimattius.http.exception.BadRequestException
+import com.santimattius.http.exception.ForbiddenException
+import com.santimattius.http.exception.HttpErrorException
+import com.santimattius.http.exception.HttpException
+import com.santimattius.http.exception.InternalServerErrorException
+import com.santimattius.http.exception.NetworkException
+import com.santimattius.http.exception.NotFoundException
+import com.santimattius.http.exception.ParseException
+import com.santimattius.http.exception.ServiceUnavailableException
+import com.santimattius.http.exception.TimeoutException
+import com.santimattius.http.exception.UnauthorizedException
+import kotlinx.coroutines.CancellationException
 
 /**
  * Interface for intercepting and potentially transforming HTTP requests and responses.
@@ -40,8 +52,33 @@ interface Interceptor {
      *
      * @sample com.santimattius.http.interceptor.samples.interceptorSample
      *
-     * @throws Exception if an error occurs during request processing
+     * @throws NetworkException if network connectivity fails
+     * @throws TimeoutException if the request times out
+     * @throws ParseException if response parsing fails
+     * @throws BadRequestException for HTTP 400 errors
+     * @throws UnauthorizedException for HTTP 401 errors
+     * @throws ForbiddenException for HTTP 403 errors
+     * @throws NotFoundException for HTTP 404 errors
+     * @throws InternalServerErrorException for HTTP 500 errors
+     * @throws ServiceUnavailableException for HTTP 503 errors
+     * @throws HttpErrorException for other HTTP error codes (4xx, 5xx)
+     * @throws HttpException for other HTTP-related errors
+     * @throws CancellationException if the coroutine is cancelled
      */
+    @Throws(
+        NetworkException::class,
+        TimeoutException::class,
+        ParseException::class,
+        BadRequestException::class,
+        UnauthorizedException::class,
+        ForbiddenException::class,
+        NotFoundException::class,
+        InternalServerErrorException::class,
+        ServiceUnavailableException::class,
+        HttpErrorException::class,
+        HttpException::class,
+        CancellationException::class
+    )
     suspend fun intercept(chain: Chain): HttpResponse
 
     /**
@@ -68,9 +105,33 @@ interface Interceptor {
          *
          * @param request The request to proceed with (can be modified by interceptors)
          * @return The HTTP response, which may have been modified by subsequent interceptors
-         * @throws Exception if the request fails or a subsequent interceptor throws an exception
-         *
+         * @throws NetworkException if network connectivity fails
+         * @throws TimeoutException if the request times out
+         * @throws ParseException if response parsing fails
+         * @throws BadRequestException for HTTP 400 errors
+         * @throws UnauthorizedException for HTTP 401 errors
+         * @throws ForbiddenException for HTTP 403 errors
+         * @throws NotFoundException for HTTP 404 errors
+         * @throws InternalServerErrorException for HTTP 500 errors
+         * @throws ServiceUnavailableException for HTTP 503 errors
+         * @throws HttpErrorException for other HTTP error codes (4xx, 5xx)
+         * @throws HttpException for other HTTP-related errors
+         * @throws CancellationException if the coroutine is cancelled
          */
+        @Throws(
+            NetworkException::class,
+            TimeoutException::class,
+            ParseException::class,
+            BadRequestException::class,
+            UnauthorizedException::class,
+            ForbiddenException::class,
+            NotFoundException::class,
+            InternalServerErrorException::class,
+            ServiceUnavailableException::class,
+            HttpErrorException::class,
+            HttpException::class,
+            CancellationException::class
+        )
         suspend fun proceed(request: HttpRequest): HttpResponse
     }
 }

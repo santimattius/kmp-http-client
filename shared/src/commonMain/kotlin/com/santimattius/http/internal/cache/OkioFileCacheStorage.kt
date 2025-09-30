@@ -37,6 +37,13 @@ class OkioFileCacheStorage(
         }
     }
 
+    /**
+     * Stores a cached response.
+     *
+     * @param url The URL of the request
+     * @param data The cached response data to store
+     * @throws CacheStorageException if storing fails
+     */
     override suspend fun store(url: Url, data: CachedResponseData) {
         cacheMutex.withLock {
             try {
@@ -108,6 +115,13 @@ class OkioFileCacheStorage(
         }
     }
 
+    /**
+     * Removes a cached response.
+     *
+     * @param url The URL of the request
+     * @param varyKeys The vary keys for cache lookup
+     * @throws CacheStorageException if removal fails
+     */
     override suspend fun remove(url: Url, varyKeys: Map<String, String>) {
         cacheMutex.withLock {
             try {
@@ -122,6 +136,12 @@ class OkioFileCacheStorage(
         }
     }
 
+    /**
+     * Removes all cached responses for a URL.
+     *
+     * @param url The URL of the request
+     * @throws CacheStorageException if clearing fails
+     */
     override suspend fun removeAll(url: Url) {
         cacheMutex.withLock {
             try {
