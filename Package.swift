@@ -15,8 +15,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "KMPHttpClient",
-            url: "https://github.com/santimattius/kmp-http-client/releases/download/1.0.0-ALPHA01/KMPHttpClient-1.0.0-ALPHA01.xcframework.zip",
-            checksum: "0477978f9fc406cba261dfc27fc612fba10be08c7b7859dd60f18b33b49e1107"
+            url: "https://github.com/santimattius/kmp-http-client/releases/download/v1.0.0/KMPHttpClient-1.0.0.xcframework.zip",
+            checksum: "14d876ae46da61285c56df892130d92c7c2ec4177bb1cc5a584ea82f0372f57d"
         )
     ]
 )
