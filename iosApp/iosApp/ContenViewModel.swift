@@ -40,21 +40,21 @@ class ContenViewModel{
                  let game = try await response.getBodyAs(Game.self)
                  print("Hello Game: \(game)")
                  */
-                let response = try await client.execute(
+                let response = try await client.executeAsResult(
                     request: HttpRequest
                         .companion
                         .get(url: "/test")
                         .queryParam(name: "id", value: "475")
                         .build()
                 )
-//                switch response {
-//                case .success(let httpResponse):
-//                    print("Hello Response: \(httpResponse)")
-//                    let game = try await httpResponse.getBodyAs(Game.self)
-//                    print("Hello Game: \(game)")
-//                case .failure(let error):
-//                    print(error)
-//                }
+                switch response {
+                case .success(let httpResponse):
+                    print("Hello Response: \(httpResponse)")
+                    let game = try await httpResponse.getBodyAs(Game.self)
+                    print("Hello Game: \(game)")
+                case .failure(let error):
+                    print(error)
+                }
 
             }catch {
                 print("Http Error: \(error)")
