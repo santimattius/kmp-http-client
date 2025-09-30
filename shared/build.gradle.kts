@@ -12,7 +12,7 @@ plugins {
 }
 
 group = "io.github.santimattius.kmp"
-version = "1.0.0-ALPHA01"
+version = "1.0.0"
 
 kotlin {
     androidLibrary {
