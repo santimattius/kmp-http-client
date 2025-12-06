@@ -29,37 +29,22 @@ class ContenViewModel{
     func call(){
         Task {
             do{
-                /*let response =  try! await client.execute(
-                    request: HttpRequest
-                        .companion
-                        .get(url: "/game")
-                        .queryParam(name: "id", value: "475")
-                        .build()
-                )
-                 
-                 let game = try await response.getBodyAs(Game.self)
-                 print("Hello Game: \(game)")
-                 */
-                let response = try await client.executeAsResult(
-                    request: HttpRequest
-                        .companion
-                        .get(url: "/test")
-                        .queryParam(name: "id", value: "475")
-                        .build()
-                )
-                switch response {
-                case .success(let httpResponse):
-                    print("Hello Response: \(httpResponse)")
-                    let game = try await httpResponse.getBodyAs(Game.self)
-                    print("Hello Game: \(game)")
-                case .failure(let error):
-                    print(error)
-                }
-
-            }catch {
-                print("Http Error: \(error)")
+                let request = HttpRequest.companion.get(url: "/game")
+                    .queryParam(name: "id", value: "475")
+                    .build()
+                let response = try await client.execute(request: request)
+                let game = try await response.getBodyAs(Game.self)
+                print("Hello Game: \(game)")
+            } catch let error as UnauthorizedException {
+                // Handle auth error
+                print("UnauthorizedException: \(error)")
+            } catch let error as NetworkException {
+                // Handle network error
+                print("NetworkException: \(error)")
+            } catch {
+                // Handle unknown error
+                print("Unknown Error: \(error)")
             }
-            
         }
     }
 }
