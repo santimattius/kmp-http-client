@@ -106,7 +106,7 @@ object HttpClient {
 
     fun create(baseUrl: String): Client {
         val config = defaultConfig ?: HttpClientConfig(baseUrl = baseUrl)
-        return create(config.copy(baseUrl))
+        return create(config.copy(baseUrl = baseUrl))
     }
 
     /**

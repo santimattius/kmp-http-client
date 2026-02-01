@@ -12,6 +12,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.protobuf.ProtoBuf
 import okio.*
+import kotlin.io.encoding.Base64
 
 /**
  * A [CacheStorage] implementation that stores cached responses on the filesystem using Okio.
@@ -158,7 +159,7 @@ class OkioFileCacheStorage(
     }
 
     private fun getCacheFile(url: Url): Path {
-        val cacheKey = url.toString().encodeBase64()
+        val cacheKey = Base64.encode(url.toString().encodeToByteArray())
         return cacheDir / "$cacheKey.cache"
     }
 
