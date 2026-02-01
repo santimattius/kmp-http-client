@@ -1,29 +1,74 @@
+[![Kotlin](https://img.shields.io/badge/Kotlin-2.3.0-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org)
+[![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin_Multiplatform-2.3.0-7F52FF?logo=kotlin&logoColor=white)](https://kotlinlang.org/docs/multiplatform.html)
+[![Android](https://img.shields.io/badge/Android-AGP%209.0-3DDC84?logo=android&logoColor=white)](https://developer.android.com)
+[![iOS](https://img.shields.io/badge/iOS-Supported-8E8E93?logo=apple&logoColor=white)](https://developer.apple.com)
+[![Gradle](https://img.shields.io/badge/Gradle-9.1-02303A?logo=gradle&logoColor=white)](https://gradle.org)
+[![Android SDK](https://img.shields.io/badge/Android_SDK-36%20%7C%20min%2024-3DDC84?logo=android&logoColor=white)](https://developer.android.com)
 # KMP HTTP Client
 
-A lightweight HTTP client for Kotlin Multiplatform based on Ktor. It provides a simple builder-style API, typed configuration, interceptors (logging, authentication, error handling), and a unified response model. Compatible with Android and iOS.
+**A lightweight Kotlin Multiplatform HTTP client built on Ktor.**
 
-- Core API: `shared/src/commonMain/kotlin/com/santimattius/http/`
-- Entry point: `HttpClient` (default singleton and custom clients)
-- Request builder: `HttpRequest`
-- Response: `HttpResponse`
-- Configuration: `HttpClientConfig`
-- Interceptors: `com.santimattius.http.interceptor.*`
+KMP HTTP Client provides a minimal, builder-style API for HTTP on Android and iOS. It offers typed configuration, pluggable interceptors (logging, auth, error handling), and a unified response model—reducing boilerplate and keeping a single, consistent API across platforms.
 
-## Introduction
+---
 
-**Brief description:**  
-KMP HTTP Client simplifies the use of HTTP in Android, iOS, and Kotlin Multiplatform projects. It wraps Ktor with a small, consistent API, reducing boilerplate and centralizing configuration and observability.
+## Table of Contents
 
-**Problem it solves:**  
-It unifies HTTP usage across Android and iOS while keeping a minimal surface. It avoids duplicating Ktor setup per platform, standardizes request building, and enables handling cross-cutting concerns.
+- [Overview](#overview)
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+- [Project Structure](#project-structure)
+- [Best Practices](#best-practices)
+- [Tech Support](#tech-support)
+- [References](#references)
+
+---
+
+## Overview
+
+| Item | Description |
+|------|-------------|
+| **Purpose** | Simplify HTTP in Kotlin Multiplatform (Android & iOS) with one API surface. |
+| **Problem** | Avoid duplicated Ktor setup per platform, standardize request/response handling, and centralize cross-cutting concerns (auth, logging, errors). |
+| **Solution** | A thin wrapper over Ktor with a builder API, shared config, and interceptors. |
+
+**Core API (Kotlin):**
+
+- **Entry point:** `HttpClient` (default singleton + custom instances)
+- **Request:** `HttpRequest` (builder)
+- **Response:** `HttpResponse`
+- **Configuration:** `HttpClientConfig`
+- **Interceptors:** `com.santimattius.http.interceptor.*`
+
+---
+
+## Features
+
+- Builder-style `HttpRequest` with path, query, headers, and body
+- Typed `HttpClientConfig` (timeouts, logging, cache)
+- Built-in interceptors: logging, auth, token refresh, error handling
+- Custom interceptors via `Interceptor` (Kotlin) / Swift protocol
+- Unified `HttpResponse` with success/error and optional typed body
+- Android: Ktor OkHttp engine; iOS: Ktor Darwin
+- Swift interoperability via Skie for cleaner iOS usage
+
+---
+
+## Requirements
+
+| Platform | Requirement |
+|----------|-------------|
+| **Kotlin** | Kotlin Multiplatform project (Kotlin 2.x) |
+| **Android** | `minSdk` / `compileSdk` as in `shared/build.gradle.kts`; `INTERNET` permission |
+| **iOS** | Xcode, iOS 14+; integration via framework or Swift Package Manager |
+| **Dependencies** | Ktor and Kotlinx Serialization (included in `shared` module) |
+
+---
 
 ## Installation
-
-**Prerequisites:**
-- Kotlin Multiplatform properly configured.
-- Android: add `android.permission.INTERNET` in `AndroidManifest.xml`; respect `minSdk` and `compileSdk` defined in `shared/build.gradle.kts`.
-- iOS: Xcode (iOS 14+ recommended) and integration of the generated `Shared` framework.
-- Ktor and Kotlinx Serialization are already included in the `shared` module.
 
 ### Android (Gradle)
 
@@ -33,32 +78,31 @@ repositories {
 }
 
 dependencies {
-    // Replace with actual coordinates when publishing
     implementation("io.github.santimattius.kmp:http-client:<version>")
 }
 ```
 
-Notes:
-- Android engine: Ktor OkHttp (`ktor-client-okhttp`).
-- Initialize once (e.g., in `Application#onCreate` or using AndroidX Startup).
+- Engine: Ktor OkHttp (`ktor-client-okhttp`).
+- Initialize once (e.g. `Application#onCreate` or AndroidX Startup).
 
 ### iOS
 
-The generated framework is called `KMPHttpClient` (defined in `shared/build.gradle.kts` with `baseName = "KMPHttpClient"`). Integration options:
+The shared module produces the **KMPHttpClient** framework (`baseName` in `shared/build.gradle.kts`). You can:
 
-- Xcode + KMP plugin: include `shared` and let Gradle generate `KMPHttpClient.framework`.
-- Prebuilt XCFramework: create `KMPHttpClient.xcframework` and add it to your iOS project.
-- Swift Package Manager wrapper: define a `Package.swift` pointing to the published `KMPHttpClient.xcframework` (binary target).
+1. **Xcode + KMP:** Include the `shared` module and use the Gradle-generated framework.
+2. **Prebuilt XCFramework:** Build `KMPHttpClient.xcframework` and add it to the iOS app.
+3. **Swift Package Manager (binary):** Add a binary target pointing to the published XCFramework.
 
-Example with SwiftPM (binary target):
+**Example — SwiftPM binary target:**
+
 ```swift
-// Package.swift (example)
+// Package.swift
 import PackageDescription
 
 let package = Package(
     name: "KMPHttpClient",
-    platforms: [ .iOS(.v14) ],
-    products: [ .library(name: "KMPHttpClient", targets: ["KMPHttpClient"]) ],
+    platforms: [.iOS(.v14)],
+    products: [.library(name: "KMPHttpClient", targets: ["KMPHttpClient"])],
     targets: [
         .binaryTarget(
             name: "KMPHttpClient",
@@ -70,29 +114,34 @@ let package = Package(
 ```
 
 In Swift:
+
 ```swift
 import KMPHttpClient
 ```
 
-Skie is enabled to improve Swift interoperability:
+Skie is enabled in the shared module for better Swift interop:
+
 ```kotlin
 skie {
-    swiftBundling {
-         enabled = true 
-    }
+    swiftBundling { enabled = true }
 }
-```  
-## Basic Usage
+```
 
-Initialize the client once and reuse the default instance.
+---
 
-Kotlin (Android):
+## Quick Start
+
+1. Initialize the client once at app startup.
+2. Reuse the default client or create custom instances with `HttpClient.create(...)`.
+
+**Kotlin (Android):**
+
 ```kotlin
 import com.santimattius.http.HttpClient
 import com.santimattius.http.HttpRequest
 import com.santimattius.http.config.HttpClientConfig
 
-// Example in Application.onCreate
+// e.g. in Application.onCreate
 HttpClient.initialize(
     HttpClientConfig(baseUrl = "https://api.example.com")
         .connectTimeout(30_000)
@@ -115,19 +164,23 @@ suspend fun fetchUsers(): Result<String> = runCatching {
 }
 ```
 
-**Main parameters in `HttpClientConfig`:**
-- `baseUrl`: API base URL.
-- `connectTimeout`: connection timeout (ms).
-- `socketTimeout`: read/write timeout (ms).
-- `enableLogging`: enable or disable logs.
-- `logLevel`: `NONE`, `BASIC`, `HEADERS`, `BODY`.
-- `cache`: cache configuration (`CacheConfig`).
+**Main `HttpClientConfig` options:**
+
+| Parameter | Description |
+|-----------|-------------|
+| `baseUrl` | Base URL for requests |
+| `connectTimeout` | Connection timeout (ms) |
+| `socketTimeout` | Read/write timeout (ms) |
+| `enableLogging` | Enable/disable HTTP logging |
+| `logLevel` | `NONE`, `BASIC`, `HEADERS`, `BODY` |
+| `cache` | Optional cache config (`CacheConfig`) |
 
 ---
 
-## Advanced Use Cases
+## Usage
 
-**POST with JSON body:**
+### POST with JSON body
+
 ```kotlin
 import kotlinx.serialization.Serializable
 
@@ -148,40 +201,42 @@ suspend fun login(email: String, password: String): Boolean {
 }
 ```
 
-**Custom client with interceptors:**  
-The library already provides some interceptors such as:
-- **AuthInterceptor**: for authorization handling.
-- **TokenRefreshInterceptor**: for token management.
-- **LoggingInterceptor**: for customizing log output.
-- **ErrorHandlingInterceptor**: for throwing exceptions based on HTTP error types.
+### Custom client and interceptors
+
+Built-in interceptors:
+
+- **AuthInterceptor** — Authorization headers
+- **TokenRefreshInterceptor** — Token refresh flow
+- **LoggingInterceptor** — Configurable logging
+- **ErrorHandlingInterceptor** — Map HTTP errors to exceptions
 
 ```kotlin
 import com.santimattius.http.config.HttpClientConfig
 import com.santimattius.http.config.LogLevel
 import com.santimattius.http.interceptor.LoggingInterceptor
 
-val customClient = com.santimattius.http.HttpClient.create(
+val customClient = HttpClient.create(
     HttpClientConfig(baseUrl = "https://api.example.com")
         .enableLogging(true)
         .logLevel(LogLevel.BODY)
 ).addInterceptors(LoggingInterceptor())
 ```
-You can also implement your own interceptors using the `Interceptor` interface/protocol:
+
+Custom interceptor (Swift):
 
 ```swift
 import KMPHttpClient
 
 class OkHttpInterceptor: Interceptor {
-     
     func __intercept(chain: any InterceptorChain) async throws -> HttpResponse {
         print("Hello from OkHttpInterceptor")
         return try await chain.proceed(request: chain.request)
     }
-    
 }
 ```
 
-**Swift interop with JSON decoding:**
+### Swift: JSON decoding
+
 ```swift
 import Foundation
 import KMPHttpClient
@@ -201,37 +256,71 @@ func loadUsers() async throws -> [User] {
 }
 ```
 
+---
+
+## Project Structure
+
+| Path | Description |
+|------|-------------|
+| `shared/src/commonMain/kotlin/com/santimattius/http/` | Core HTTP API, config, interceptors |
+| `shared/src/commonMain/swift/` | Swift extensions and helpers |
+| `androidApp/` | Android sample app |
+| `iosApp/` | iOS sample app |
+
+---
+
 ## Best Practices
 
-- Initialize once with `HttpClient.initialize(...)` and reuse `HttpClient.defaultClient()`.
-- Prefer a single `baseUrl` and build routes with `get("/segment")` and `queryParam()`.
-- Adjust `connectTimeout(...)` and `socketTimeout(...)` according to your use case.
-- Use `enableLogging(true)` and `LogLevel.BODY` only in development to avoid leaking sensitive data.
-- Implement interceptors for auth, retries, and error handling (`com.santimattius.http.interceptor.*`).
-- Always check `HttpResponse.isSuccessful` and handle errors properly.
-- **Android:** keep networking off the main thread (use coroutines and proper dispatchers).
-- **iOS:** use `async/await` and, if necessary, small Kotlin facades to simplify suspend calls from Swift.
+- **Initialization:** Call `HttpClient.initialize(...)` once at startup; reuse `HttpClient.defaultClient()`.
+- **URLs:** Prefer a single `baseUrl` and build paths with `get("/segment")` and `queryParam()`.
+- **Timeouts:** Set `connectTimeout` and `socketTimeout` to match your backend and network.
+- **Logging:** Use `enableLogging(true)` and `LogLevel.BODY` only in development to avoid leaking sensitive data.
+- **Cross-cutting logic:** Use interceptors for auth, retries, and error handling.
+- **Responses:** Always check `HttpResponse.isSuccessful` and handle errors explicitly.
+- **Android:** Keep I/O off the main thread (coroutines + appropriate dispatchers).
+- **iOS:** Use `async/await`; consider Kotlin facades for suspend functions called from Swift.
 
-**Common pitfalls and how to avoid them:**
-- Forgetting `HttpClient.initialize(...)` before `defaultClient()`: always initialize during app startup.
-- Malformed URLs: use `get(baseUrl).path("/segment")` and validate.
-- Missing `Content-Type` for JSON: always set `header("Content-Type", "application/json")`.
-- Excessive logging in production: limit to `BASIC` or `NONE`.
-- Suspend bridging issues in iOS: check interop configuration (Skie) or create Kotlin facades.
+**Common pitfalls:**
+
+| Pitfall | Mitigation |
+|---------|------------|
+| Using `defaultClient()` before `initialize(...)` | Initialize in app startup (e.g. `Application#onCreate`). |
+| Malformed URLs | Use `path("/segment")` and validate base URL. |
+| Missing JSON `Content-Type` | Set `header("Content-Type", "application/json")` for JSON bodies. |
+| Verbose logging in production | Use `LogLevel.BASIC` or `NONE`. |
+| Swift/suspend bridging issues | Verify Skie/interop setup or add Kotlin facades. |
+
+---
+
+## Tech Support
+
+This project is maintained on a **best-effort** basis by the core team and community. The following guidelines set expectations for support and maintenance.
+
+### Support scope
+
+| Type | In scope | Out of scope |
+|------|----------|--------------|
+| **Library usage** | Setup, API usage, migration from Ktor | App-level architecture, non-HTTP bugs |
+| **Bug reports** | Reproducible bugs in this repo | Third-party libs, OS/IDE issues |
+| **Documentation** | README, code samples, migration notes | Custom tutorials, external blogs |
+
+### Support channels
+
+- **GitHub Issues:** Bug reports and feature requests. Use the issue templates when available.
+- **GitHub Discussions:** Questions, ideas, and community help (no guaranteed response time).
+
+### How to get help
+
+1. **Search** existing Issues and Discussions.
+2. **Read** this README and the referenced docs.
+3. **Open an Issue** for bugs (with minimal repro) or **start a Discussion** for questions.
+4. **Be specific:** environment, versions, code snippet, and what you already tried.
+
+---
 
 ## References
 
-- **Source code:**
-  - Core HTTP: `shared/src/commonMain/kotlin/com/santimattius/http/`
-  - Swift extensions: `shared/src/commonMain/swift/`
-  - Android sample: `androidApp/`
-  - iOS sample: `iosApp/`
-
-- **Official documentation:**
-  - Kotlin Multiplatform: https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html
-  - Ktor Client: https://ktor.io/docs/getting-started-ktor-client.html
-
-## Environment Check
-
-It is recommended to install and run [kdoctor](https://github.com/Kotlin/kdoctor) to verify that your development environment is correctly set up for Kotlin Multiplatform.  
-`kdoctor` helps diagnose and fix common configuration issues.  
+- **Repository:** [github.com/santimattius/kmp-http-client](https://github.com/santimattius/kmp-http-client)
+- **Kotlin Multiplatform:** [Get started with Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)
+- **Ktor Client:** [Ktor client documentation](https://ktor.io/docs/getting-started-ktor-client.html)
+- **Environment:** Run [kdoctor](https://github.com/Kotlin/kdoctor) to verify your KMP development setup.
