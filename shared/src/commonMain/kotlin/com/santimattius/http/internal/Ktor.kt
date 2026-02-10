@@ -1,12 +1,14 @@
 package com.santimattius.http.internal
 
+import com.santimattius.http.configuration.ClientCache
 import com.santimattius.http.configuration.HttpClientConfig
 import com.santimattius.http.configuration.LogLevel
-import com.santimattius.http.internal.cache.configureCache
-import com.santimattius.http.internal.cache.disableCaching
-import com.santimattius.http.internal.cache.getCacheDirectoryProvider
+import io.github.santimattius.persistent.cache.CacheConfig
+import io.github.santimattius.persistent.cache.configureCache
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.cache.HttpCache
+import io.ktor.client.plugins.cache.storage.CacheStorage
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.Logger
@@ -110,9 +112,12 @@ internal fun createKtorClient(
         }
 
         if (config.cache.enabled) {
-            configureCache(config.cache, getCacheDirectoryProvider())
+            configureCache(config = config.cache.convertToLibType())
         } else {
-            disableCaching()
+            //TODO: pending for fix
+            install(HttpCache) {
+                privateStorage(CacheStorage.Disabled)
+            }
         }
         // Configure default request settings
         defaultRequest {
@@ -123,4 +128,14 @@ internal fun createKtorClient(
             header(HttpHeaders.ContentType, ContentType.Application.Json)
         }
     }
+}
+
+private fun ClientCache.convertToLibType(): CacheConfig {
+    return CacheConfig(
+        enabled = this.enabled,
+        cacheDirectory = this.cacheDirectory,
+        maxCacheSize = this.maxCacheSize,
+        cacheTtl = this.cacheTtl,
+        isShared = this.isShared
+    )
 }
