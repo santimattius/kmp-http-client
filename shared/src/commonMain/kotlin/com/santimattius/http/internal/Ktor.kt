@@ -4,11 +4,9 @@ import com.santimattius.http.configuration.ClientCache
 import com.santimattius.http.configuration.HttpClientConfig
 import com.santimattius.http.configuration.LogLevel
 import io.github.santimattius.persistent.cache.CacheConfig
-import io.github.santimattius.persistent.cache.configureCache
+import io.github.santimattius.persistent.cache.installPersistentCache
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.cache.HttpCache
-import io.ktor.client.plugins.cache.storage.CacheStorage
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.logging.Logger
@@ -111,14 +109,7 @@ internal fun createKtorClient(
             }
         }
 
-        if (config.cache.enabled) {
-            configureCache(config = config.cache.convertToLibType())
-        } else {
-            //TODO: pending for fix
-            install(HttpCache) {
-                privateStorage(CacheStorage.Disabled)
-            }
-        }
+       installPersistentCache(config = config.cache.convertToLibType())
         // Configure default request settings
         defaultRequest {
             // Set the base URL for all requests
