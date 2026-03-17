@@ -46,9 +46,8 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.ktor.client.okhttp)
-            implementation(libs.androidx.startup.runtime)
         }
-        
+
         commonMain.dependencies {
             // Kotlin
             implementation(libs.kotlinx.coroutines.core)
@@ -60,17 +59,16 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.serialization.protobuf)
-            // Okio
-            implementation(libs.okio)
-            
+
             // Ktor plugins
+            implementation(libs.ktor.persistent.cache)
 
         }
-        
+
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
         }
-        
+
         commonTest.dependencies {
             implementation(libs.kotlin.test)
         }

@@ -10,7 +10,7 @@ import kotlin.time.Duration.Companion.seconds
  * @property maxCacheSize Maximum cache size in bytes (default: 10MB)
  * @property cacheTtl Time-to-live for cache entries in milliseconds (default: 1 hour)
  */
-data class CacheConfig(
+data class ClientCache(
     val enabled: Boolean = false,
     val cacheDirectory: String = "http_cache",
     val maxCacheSize: Long = 10L * 1024 * 1024, // 10 MB
@@ -39,7 +39,7 @@ data class HttpClientConfig(
     val socketTimeout: Long,
     val enableLogging: Boolean = false,
     val logLevel: LogLevel = LogLevel.BASIC,
-    val cache: CacheConfig = CacheConfig()
+    val cache: ClientCache = ClientCache()
 ) {
     /**
      * Creates a new HTTP client configuration with default values.
@@ -113,7 +113,7 @@ data class HttpClientConfig(
      * @param cacheConfig The cache configuration
      * @return A new [HttpClientConfig] with the updated cache configuration
      */
-    fun cache(cacheConfig: CacheConfig) = copy(cache = cacheConfig)
+    fun cache(cacheConfig: ClientCache) = copy(cache = cacheConfig)
 }
 
 /**

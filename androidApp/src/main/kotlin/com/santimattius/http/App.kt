@@ -55,13 +55,12 @@ fun App(
                     modifier = Modifier.fillMaxWidth().padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    val greeting = remember { Greeting().greet() }
                     Image(
                         modifier = Modifier.size(100.dp),
                         painter = painterResource(id = R.drawable.compose_multiplatform),
                         contentDescription = null
                     )
-                    Text("Compose: $greeting")
+                    Text("Compose")
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(onClick = onClick) {

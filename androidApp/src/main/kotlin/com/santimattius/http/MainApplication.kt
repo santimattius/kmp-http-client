@@ -1,7 +1,7 @@
 package com.santimattius.http
 
 import android.app.Application
-import com.santimattius.http.configuration.CacheConfig
+import com.santimattius.http.configuration.ClientCache
 import com.santimattius.http.configuration.HttpClientConfig
 
 class MainApplication : Application() {
@@ -16,7 +16,7 @@ class MainApplication : Application() {
     private fun createConfiguration(): HttpClientConfig {
         return HttpClientConfig("https://api-picture.onrender.com/")
             .cache(
-                cacheConfig = CacheConfig(
+                cacheConfig = ClientCache(
                     enabled = true,
                     cacheDirectory = "http_cache",
                     maxCacheSize = 10L * 1024 * 1024, // 10 MB

@@ -3,7 +3,7 @@ package com.santimattius.http
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.santimattius.http.configuration.CacheConfig
+import com.santimattius.http.configuration.ClientCache
 import com.santimattius.http.configuration.HttpClientConfig
 import com.santimattius.http.configuration.LogLevel
 import com.santimattius.http.extension.getBodyAs
@@ -30,7 +30,7 @@ class MainViewModel : ViewModel() {
         ).enableLogging(true)
             .logLevel(LogLevel.BASIC)
             .cache(
-                cacheConfig = CacheConfig(
+                cacheConfig = ClientCache(
                     enabled = true,
                     cacheDirectory = "http_cache",
                     maxCacheSize = 10L * 1024 * 1024, // 10 MB

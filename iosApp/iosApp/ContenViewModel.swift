@@ -16,11 +16,11 @@ class ContenViewModel{
     
     init () {
         client = HttpClient.shared.create(config: HttpClientConfig(
-            baseUrl: "https://www.freetogame.com/",
-        ).logLevel(level: .basic)
+            baseUrl: "https://www.freetogame.com/api",
+        ).logLevel(level: .headers)
             .connectTimeout(timeout: 10000)
             .enableLogging(enable: true)
-            .cache(cacheConfig: CacheConfig(
+            .cache(cacheConfig: ClientCache(
                 enable: true, cacheDirectory: "ios-http-cache")
             )
         ).addInterceptors(interceptor: OkHttpInterceptor())
